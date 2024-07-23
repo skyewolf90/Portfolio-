@@ -2,4 +2,5 @@ title: Skye Hillhouse
 logo:"C:\Users\Lenovo\Downloads\Untitled design.png"
 #description: Data Scientist
 show download: true
-theme: jakyll-theme-minimal
+theme: jekyll-theme-minimal
+
