@@ -1,0 +1,45 @@
+library("rcompanion")
+library("car")
+library("IDPmisc")
+library('dplyr')
+install.packages("IDPmisc")
+
+avocados <- read.csv("C:/Users/Lenovo/OneDrive/Desktop/Data-Science-Program/DATASETS/avocados.csv")
+head(avocados)
+
+plotNormalHistogram(avocados$AveragePrice)
+## looks pretty but lets sqrt it, to see id there is a difference
+
+avocados$AveragePriceSQRT <- sqrt(avocados$AveragePrice)
+plotNormalHistogram(avocados$AveragePriceSQRT)
+## Wrangle data
+HAS <- na.omit(avocados %>% filter(region %in% c("Houston", "Albany", "Seattle")))
+plotNormalHistogram(HAS$AveragePriceSQRT)
+## sQRT better, normally distributed
+HAS$AveragePriceCube <- HAS$AveragePrice ^ 3
+plotNormalHistogram(HAS$AveragePriceCube)
+## is too positivley skewed going with SQRT
+
+# testing for Homogeneity of variance
+bartlett.test(AveragePriceSQRT ~ region, data=avocados)
+## The p-value < 2.2e-16. to meet the assumption the p value must be more than .05. this p value is less. It did not meet the assumption
+HASANOVA <- aov(HAS$AveragePriceSQRT ~ HAS$region)
+summary(HASANOVA)
+
+ANOVA <-lm(AveragePriceSQRT ~ region, data = HAS)
+Anova(ANOVA, Type = "II", white.adujst = TRUE)
+# p value 2.2e-16 ***
+
+###POST HOCS TEST
+
+##  No Adjustment
+pairwise.t.test(HAS$AveragePriceSQRT, HAS$region, p.adjust="none")
+
+pairwise.t.test(HAS$AveragePriceSQRT, HAS$region, p.adjust="bonferroni")
+
+pairwise.t.test(HAS$AveragePriceSQRT, HAS$region, p.adjust="bonferroni", pool.sd = FALSE)
+
+### Determin means and draw conclusion
+
+HASMeans <- HAS %>% group_by(region) %>% summarize(Mean = mean(AveragePriceSQRT))
+##Does the average price of avocados differ between Albany, Houston, and Seattle? no Albany 1.243726,Houston, 1.013421, Seattle 1.186291

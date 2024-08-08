@@ -1,0 +1,9 @@
+library(readr)
+library(readxl)
+energy<-read_excel("C:/Users/Lenovo/Desktop/Data-Science-Program/DATASETS/energy.xlsx")
+head(energy)
+View(energy)
+library(tidyr)
+energy1<-t(energy)
+energy1
+View(energy1)
